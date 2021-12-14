@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">FirstApp</string>
+    <string name="app_title">Hello</string>
+    <string name="loginBtn">Login</string>
+    <string name="loginHint">Login</string>
+    <string name="passwordHint">Password</string>
+
+</resources>
