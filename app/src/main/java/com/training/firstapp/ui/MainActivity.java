@@ -5,10 +5,13 @@ import android.app.job.JobInfo;
 import android.app.job.JobScheduler;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
+import android.content.ContentValues;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -54,7 +57,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
         jobBtn = findViewById(R.id.jobBtn);
         loginBtn.setOnClickListener(this);
         jobBtn.setOnClickListener(this);
-
+        dbBtn.setOnClickListener(this);
         dbHelper = new WineDBHelper(getApplicationContext());
     }
 
@@ -97,6 +100,30 @@ public class MainActivity extends Activity implements View.OnClickListener {
                         .setRequiresCharging(true)
                         .build();
                 jobScheduler.schedule(jobInfo);
+                break;
+
+            case R.id.dbBtn:
+                ContentValues values = new ContentValues();
+                values.put("title", "Romanée Conti");
+                values.put("year", 2001);
+                values.put("price", 5000.90);
+                database.insert("bottle", null, values);
+
+                String[] columns = {"id", "title", "year", "price"};
+                String selection = "year > ? and price > ?";
+                String[] selectionArgs = {"1995", "2000"};
+                //select * from bottle where year > ? and price > ?
+                String order = "year asc";
+                Cursor cursor = database.query("bottle", columns, selection, selectionArgs, null, null, order);
+
+                while(cursor.moveToNext()) {
+                    int id = cursor.getInt(0);
+                    String title = cursor.getString(1);
+                    int year = cursor.getInt(2);
+                    double price = cursor.getDouble(3);
+                    Log.i("db", id + ", " + title + ", " + year + ", " + price);
+                }
+
         }
     }
 
