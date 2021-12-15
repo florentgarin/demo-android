@@ -1,8 +1,5 @@
 package com.training.firstapp.ui;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.JobIntentService;
-
 import android.app.Activity;
 import android.app.job.JobInfo;
 import android.app.job.JobScheduler;
@@ -21,12 +18,8 @@ import com.training.firstapp.receivers.AirplaneModeReceiver;
 import com.training.firstapp.services.LongRunningService;
 
 import java.util.Objects;
-import java.util.concurrent.Callable;
-import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
 
 public class MainActivity extends Activity implements View.OnClickListener {
 

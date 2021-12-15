@@ -2,7 +2,6 @@ package com.training.firstapp.services;
 
 import android.app.job.JobParameters;
 import android.app.job.JobService;
-import android.content.Intent;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
@@ -50,7 +49,6 @@ public class LongRunningService extends JobService {
         showToast("Finish long task");
         jobFinished(params, false);
     }
-
 
 
 }
