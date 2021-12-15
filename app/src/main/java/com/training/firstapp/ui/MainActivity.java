@@ -7,6 +7,7 @@ import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -14,6 +15,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.training.firstapp.R;
+import com.training.firstapp.database.WineDBHelper;
 import com.training.firstapp.receivers.AirplaneModeReceiver;
 import com.training.firstapp.services.LongRunningService;
 
@@ -28,6 +30,9 @@ public class MainActivity extends Activity implements View.OnClickListener {
     private EditText passwordTxt;
 
     private Button jobBtn;
+    private Button dbBtn;
+    private WineDBHelper dbHelper;
+    private SQLiteDatabase database;
 
     private int jobId = 0;
     private ExecutorService threadPool = Executors.newFixedThreadPool(10);
@@ -44,10 +49,13 @@ public class MainActivity extends Activity implements View.OnClickListener {
         loginBtn = findViewById(R.id.loginBtn);
         loginTxt = findViewById(R.id.loginTxt);
         passwordTxt = findViewById(R.id.passwordTxt);
+        dbBtn = findViewById(R.id.dbBtn);
+
         jobBtn = findViewById(R.id.jobBtn);
         loginBtn.setOnClickListener(this);
         jobBtn.setOnClickListener(this);
 
+        dbHelper = new WineDBHelper(getApplicationContext());
     }
 
     @Override
@@ -56,12 +64,15 @@ public class MainActivity extends Activity implements View.OnClickListener {
         var filter = new IntentFilter();
         filter.addAction(Intent.ACTION_AIRPLANE_MODE_CHANGED);
         registerReceiver(airplaneReceiver, filter);
+        database = dbHelper.getWritableDatabase();
     }
 
     @Override
     protected void onStop() {
         super.onStop();
         unregisterReceiver(airplaneReceiver);
+        database.close();
+        database = null;
     }
 
     @Override
