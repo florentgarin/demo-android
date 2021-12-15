@@ -4,7 +4,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.JobIntentService;
 
 import android.app.Activity;
+import android.app.job.JobInfo;
+import android.app.job.JobScheduler;
 import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
@@ -15,14 +18,27 @@ import android.widget.Toast;
 
 import com.training.firstapp.R;
 import com.training.firstapp.receivers.AirplaneModeReceiver;
+import com.training.firstapp.services.LongRunningService;
 
 import java.util.Objects;
+import java.util.concurrent.Callable;
+import java.util.concurrent.CyclicBarrier;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 public class MainActivity extends Activity implements View.OnClickListener {
 
     private Button loginBtn;
     private EditText loginTxt;
     private EditText passwordTxt;
+
+    private Button jobBtn;
+
+    private int jobId = 0;
+    private ExecutorService threadPool = Executors.newFixedThreadPool(10);
+
 
     private BroadcastReceiver airplaneReceiver = new AirplaneModeReceiver();
     private final static int NUMBER_REQ = 33;
@@ -35,8 +51,10 @@ public class MainActivity extends Activity implements View.OnClickListener {
         loginBtn = findViewById(R.id.loginBtn);
         loginTxt = findViewById(R.id.loginTxt);
         passwordTxt = findViewById(R.id.passwordTxt);
-
+        jobBtn = findViewById(R.id.jobBtn);
         loginBtn.setOnClickListener(this);
+        jobBtn.setOnClickListener(this);
+
     }
 
     @Override
@@ -52,6 +70,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
         super.onStop();
         unregisterReceiver(airplaneReceiver);
 
+
     }
 
     @Override
@@ -65,6 +84,16 @@ public class MainActivity extends Activity implements View.OnClickListener {
                     navigateNextScreen();
                 }
                 break;
+
+            case R.id.jobBtn:
+                JobScheduler jobScheduler = getSystemService(JobScheduler.class);
+
+                //var service = new ComponentName("com.training.firstapp", "com.training.firstapp.services.LongRunningService");
+                var service = new ComponentName(getApplicationContext(), LongRunningService.class);
+
+                JobInfo jobInfo = new JobInfo.Builder(jobId++, service)
+                        .build();
+                jobScheduler.schedule(jobInfo);
         }
     }
 
