@@ -1,11 +1,9 @@
 package com.training.firstapp.services;
-
 import android.util.Log;
 
 import java.util.List;
 
 public class SampleRPCImpl extends SampleRPCInterface.Stub {
-
 
 
     @Override
@@ -17,5 +15,14 @@ public class SampleRPCImpl extends SampleRPCInterface.Stub {
     public void test(List lst) {
         //
         Log.i("SampleRPC", "test: " + lst);
+    }
+
+    @Override
+    public Profile getProfile() {
+        var profile = new Profile();
+        profile.setAge(44);
+        profile.setFirstName("John");
+        profile.setLastName("Kennedy");
+        return profile;
     }
 }

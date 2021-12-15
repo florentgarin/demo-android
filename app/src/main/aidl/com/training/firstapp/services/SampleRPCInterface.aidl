@@ -1,4 +1,5 @@
 package com.training.firstapp.services;
+import com.training.firstapp.services.Profile;
 
 interface SampleRPCInterface {
 
@@ -6,5 +7,7 @@ interface SampleRPCInterface {
             double aDouble, String aString);
 
     oneway void test(in List lst);
+
+    Profile getProfile();
 
 }

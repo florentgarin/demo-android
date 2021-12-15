@@ -62,8 +62,6 @@ public class MainActivity extends Activity implements View.OnClickListener {
     protected void onStop() {
         super.onStop();
         unregisterReceiver(airplaneReceiver);
-
-
     }
 
     @Override
@@ -85,6 +83,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
                 var service = new ComponentName(getApplicationContext(), LongRunningService.class);
 
                 JobInfo jobInfo = new JobInfo.Builder(jobId++, service)
+                        .setRequiresCharging(true)
                         .build();
                 jobScheduler.schedule(jobInfo);
         }
