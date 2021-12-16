@@ -19,12 +19,16 @@ import android.widget.Toast;
 
 import com.training.firstapp.R;
 import com.training.firstapp.database.WineDBHelper;
+import com.training.firstapp.database.WineRoomDatabase;
 import com.training.firstapp.receivers.AirplaneModeReceiver;
 import com.training.firstapp.services.LongRunningService;
 
 import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+
+import androidx.room.Room;
+import androidx.room.RoomDatabase;
 
 public class MainActivity extends Activity implements View.OnClickListener {
 
@@ -36,6 +40,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
     private Button dbBtn;
     private WineDBHelper dbHelper;
     private SQLiteDatabase database;
+    private WineRoomDatabase roomDatabase;
 
     private int jobId = 0;
     private ExecutorService threadPool = Executors.newFixedThreadPool(10);
@@ -59,6 +64,8 @@ public class MainActivity extends Activity implements View.OnClickListener {
         jobBtn.setOnClickListener(this);
         dbBtn.setOnClickListener(this);
         dbHelper = new WineDBHelper(getApplicationContext());
+
+        roomDatabase = Room.databaseBuilder(this, WineRoomDatabase.class, "room-wine.db").build();
     }
 
     @Override
@@ -103,30 +110,37 @@ public class MainActivity extends Activity implements View.OnClickListener {
                 break;
 
             case R.id.dbBtn:
-                ContentValues values = new ContentValues();
-                values.put("title", "Romanée Conti");
-                values.put("year", 2001);
-                values.put("price", 5000.90);
-                database.insert("bottle", null, values);
-
-                String[] columns = {"id", "title", "year", "price"};
-                String selection = "year > ? and price > ?";
-                String[] selectionArgs = {"1995", "2000"};
-                //select * from bottle where year > ? and price > ?
-                String order = "year asc";
-                Cursor cursor = database.query("bottle", columns, selection, selectionArgs, null, null, order);
-
-                while(cursor.moveToNext()) {
-                    int id = cursor.getInt(0);
-                    String title = cursor.getString(1);
-                    int year = cursor.getInt(2);
-                    double price = cursor.getDouble(3);
-                    Log.i("db", id + ", " + title + ", " + year + ", " + price);
-                }
 
         }
     }
 
+    private void insertIntoRoomDB() {
+
+    }
+
+    private void insertAndQuerySQLiteDB() {
+        ContentValues values = new ContentValues();
+        values.put("title", "Romanée Conti");
+        values.put("year", 2001);
+        values.put("price", 5000.90);
+        database.insert("bottle", null, values);
+
+        String[] columns = {"id", "title", "year", "price"};
+        String selection = "year > ? and price > ?";
+        String[] selectionArgs = {"1995", "2000"};
+        //select * from bottle where year > ? and price > ?
+        String order = "year asc";
+        Cursor cursor = database.query("bottle", columns, selection, selectionArgs, null, null, order);
+
+        while(cursor.moveToNext()) {
+            int id = cursor.getInt(0);
+            String title = cursor.getString(1);
+            int year = cursor.getInt(2);
+            double price = cursor.getDouble(3);
+            Log.i("db", id + ", " + title + ", " + year + ", " + price);
+        }
+
+    }
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
