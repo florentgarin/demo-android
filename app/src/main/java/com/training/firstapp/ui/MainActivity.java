@@ -18,6 +18,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.training.firstapp.R;
+import com.training.firstapp.database.Bottle;
 import com.training.firstapp.database.WineDBHelper;
 import com.training.firstapp.database.WineRoomDatabase;
 import com.training.firstapp.receivers.AirplaneModeReceiver;
@@ -28,7 +29,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import androidx.room.Room;
-import androidx.room.RoomDatabase;
 
 public class MainActivity extends Activity implements View.OnClickListener {
 
@@ -45,6 +45,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
     private int jobId = 0;
     private ExecutorService threadPool = Executors.newFixedThreadPool(10);
 
+    private ExecutorService roomThread = Executors.newSingleThreadExecutor();
 
     private BroadcastReceiver airplaneReceiver = new AirplaneModeReceiver();
     private final static int NUMBER_REQ = 33;
@@ -110,12 +111,37 @@ public class MainActivity extends Activity implements View.OnClickListener {
                 break;
 
             case R.id.dbBtn:
-
+                roomThread.submit(() -> deleteBottle("Beaujolais"));
         }
+    }
+    private void fetchData() {
+        var dao = roomDatabase.bottleDAO();
+        var lst = dao.findBottlesByYearAndPrice(2004, 10);
+        Log.i("Room", lst + "");
+    }
+
+    private void updateBottle() {
+        var dao = roomDatabase.bottleDAO();
+        dao.updateBottle(new Bottle(3, "Mont Bazihac", 2003, 44));
+
+    }
+    private void deleteBottle(String title) {
+        var dao = roomDatabase.bottleDAO();
+
+        dao.deleteBottle(new Bottle.Title(title));
+    }
+    private void deleteBottle(int id) {
+        var dao = roomDatabase.bottleDAO();
+
+        dao.deleteBottle(new Bottle(id));
     }
 
     private void insertIntoRoomDB() {
-
+        var dao = roomDatabase.bottleDAO();
+        dao.persistBottle(
+                new Bottle("chateau bla", 2020, 12),
+                new Bottle("Beaujolais", 2021, 2.50),
+                new Bottle("Mont Bazihac", 2003, 25));
     }
 
     private void insertAndQuerySQLiteDB() {
